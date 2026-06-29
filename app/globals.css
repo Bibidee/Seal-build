@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+:root {
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  --seal-black: #07080C;
+  --seal-gold: #E0B64B;
+  --verdict-cyan: #22D3EE;
+  --escrow-green: #16A34A;
+  --dispute-red: #EF4444;
+  --panel-navy: #0F172A;
+  --mist-line: #CBD5E1;
+  --soft-white: #F8FAFC;
+  --muted-slate: #64748B;
+  --electric-purple: #7C3AED;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: #07080C;
+  color: #CBD5E1;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { font-family: var(--font-display); }
+code, pre, .font-mono { font-family: var(--font-mono); }
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: #07080C; }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 2px; }
+
+::selection { background: #1e3a5f; }
+
+.gold-text { color: #E0B64B; }
+.cyan-text { color: #22D3EE; }
+.green-text { color: #16A34A; }
+.red-text { color: #EF4444; }
+.purple-text { color: #7C3AED; }
+
+.panel {
+  background: #0F172A;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+}
+
+.panel-sm {
+  background: #0d1829;
+  border: 1px solid #1a2540;
+  border-radius: 8px;
+}
+
+.gold-border { border-color: #E0B64B; }
+.cyan-border { border-color: #22D3EE; }
+
+@keyframes pulse-gold {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.pulse-gold { animation: pulse-gold 2s ease-in-out infinite; }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(224, 182, 75, 0.08) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s ease-in-out infinite;
+}
