@@ -1,28 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Activity, Shield, ArrowUpRight, ArrowDownLeft, RotateCcw } from "lucide-react";
+import { Radio, ArrowUpRight, ArrowDownLeft, RotateCcw, Anchor, TriangleAlert } from "lucide-react";
 import { useWallet } from "@/lib/context/WalletContext";
 import { getWalletActivity, weiToGen } from "@/lib/genlayer/sealClient";
 import type { ActivityEvent } from "@/lib/genlayer/types";
 
-const EVENT_CONFIG: Record<string, { label: string; color: string; icon: typeof Activity }> = {
-  seal_created:         { label: "Seal Created",        color: "#E0B64B", icon: Shield },
-  seal_accepted:        { label: "Seal Accepted",       color: "#22D3EE", icon: ArrowDownLeft },
-  seal_cancelled:       { label: "Seal Cancelled",      color: "#64748B", icon: Activity },
-  seal_expired:         { label: "Seal Expired",        color: "#64748B", icon: Activity },
-  delivery_submitted:   { label: "Delivery Submitted",  color: "#7C3AED", icon: ArrowUpRight },
-  revision_submitted:   { label: "Revision Submitted",  color: "#7C3AED", icon: RotateCcw },
-  verdict_issued:       { label: "Verdict Issued",      color: "#E0B64B", icon: Activity },
-  payout_claimed:       { label: "Payout Claimed",      color: "#16A34A", icon: ArrowDownLeft },
-  refund_claimed:       { label: "Refund Claimed",      color: "#22D3EE", icon: ArrowDownLeft },
-  bond_returned:        { label: "Bond Returned",       color: "#E0B64B", icon: ArrowDownLeft },
-  bond_slashed_full:    { label: "Bond Slashed (Full)", color: "#EF4444", icon: Activity },
-  bond_slashed_partial: { label: "Bond Slashed (Partial)", color: "#F59E0B", icon: Activity },
-  bond_returned_expiry: { label: "Bond Returned (Expiry)", color: "#E0B64B", icon: ArrowDownLeft },
+const EVENT_CONFIG: Record<string, { label: string; accentColor: string; icon: typeof Radio; stampClass: string }> = {
+  seal_created:         { label: "SEAL CREATED",          accentColor: "#00C9E8", icon: Anchor,         stampClass: "stamp-partial"  },
+  seal_accepted:        { label: "SEAL ACCEPTED",         accentColor: "#FF5C1A", icon: ArrowDownLeft,  stampClass: "stamp-refund"   },
+  seal_cancelled:       { label: "SEAL CANCELLED",        accentColor: "#5C7090", icon: Radio,          stampClass: "stamp-neutral"  },
+  seal_expired:         { label: "SEAL EXPIRED",          accentColor: "#5C7090", icon: Radio,          stampClass: "stamp-neutral"  },
+  delivery_submitted:   { label: "DELIVERY SUBMITTED",    accentColor: "#FF5C1A", icon: ArrowUpRight,   stampClass: "stamp-refund"   },
+  revision_submitted:   { label: "REVISION SUBMITTED",    accentColor: "#F5C000", icon: RotateCcw,      stampClass: "stamp-revision" },
+  verdict_issued:       { label: "VERDICT ISSUED",        accentColor: "#00C9E8", icon: Radio,          stampClass: "stamp-partial"  },
+  payout_claimed:       { label: "PAYOUT CLAIMED",        accentColor: "#00E87A", icon: ArrowDownLeft,  stampClass: "stamp-accept"   },
+  refund_claimed:       { label: "REFUND CLAIMED",        accentColor: "#FF5C1A", icon: ArrowDownLeft,  stampClass: "stamp-refund"   },
+  bond_returned:        { label: "BOND RETURNED",         accentColor: "#00C9E8", icon: ArrowDownLeft,  stampClass: "stamp-partial"  },
+  bond_slashed_full:    { label: "BOND SLASHED — FULL",   accentColor: "#FF2D4A", icon: TriangleAlert,  stampClass: "stamp-breach"   },
+  bond_slashed_partial: { label: "BOND SLASHED — PARTIAL",accentColor: "#F5C000", icon: TriangleAlert,  stampClass: "stamp-revision" },
+  bond_returned_expiry: { label: "BOND RETURNED (EXPIRY)",accentColor: "#00C9E8", icon: ArrowDownLeft,  stampClass: "stamp-partial"  },
 };
 
-export default function ActivityPage() {
+export default function ActivityLogPage() {
   const { address } = useWallet();
   const [events, setEvents] = useState<ActivityEvent[]>([]);
   const [loading, setLoading] = useState(false);
@@ -38,45 +38,54 @@ export default function ActivityPage() {
   if (!address) {
     return (
       <div className="max-w-lg mx-auto mt-20 text-center">
-        <Activity className="w-10 h-10 text-[#475569] mx-auto mb-4" />
-        <p className="text-[#475569] text-sm">Connect your wallet to view activity.</p>
+        <Radio className="w-8 h-8 text-[#2A3A50] mx-auto mb-4" />
+        <p className="text-[#5C7090] text-sm">Connect your wallet to view activity.</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#F8FAFC] mb-1">Wallet Activity</h1>
-        <p className="text-xs text-[#475569] font-mono">{address}</p>
+      {/* Header */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-1">
+          <Radio className="w-4 h-4 text-[#00C9E8]" />
+          <h1 className="text-3xl font-bold text-[#E8EDF5]" style={{ fontFamily: "var(--font-display)" }}>ACTIVITY LOG</h1>
+        </div>
+        <p className="manifest-label font-mono">{address}</p>
       </div>
 
-      {loading && <div className="text-[#475569] text-sm text-center py-8">Loading activity…</div>}
+      {loading && <div className="manifest-label py-8 text-center">LOADING ACTIVITY…</div>}
 
       {!loading && events.length === 0 && (
-        <div className="text-center py-16 text-[#475569] text-sm">No activity recorded yet.</div>
+        <div className="text-center py-16 text-[#5C7090] text-sm">No activity recorded yet.</div>
       )}
 
       <div className="space-y-2">
         {events.map((ev, i) => {
-          const cfg = EVENT_CONFIG[ev.event] ?? { label: ev.event, color: "#64748B", icon: Activity };
+          const cfg = EVENT_CONFIG[ev.event] ?? { label: ev.event.toUpperCase().replace(/_/g, " "), accentColor: "#5C7090", icon: Radio, stampClass: "stamp-neutral" };
           const Icon = cfg.icon;
           const ts = ev.ts ? new Date(parseInt(ev.ts) * 1000).toLocaleString() : "";
 
           return (
-            <div key={i} className="flex items-center gap-4 bg-[#0F172A] border border-[#1e293b] rounded-xl p-4">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: `${cfg.color}15`, border: `1px solid ${cfg.color}30` }}>
-                <Icon className="w-4 h-4" style={{ color: cfg.color }} />
+            <div key={i} className="dock-panel flex items-center gap-4 px-4 py-3">
+              {/* Icon */}
+              <div className="w-8 h-8 border flex items-center justify-center flex-shrink-0"
+                style={{ background: `${cfg.accentColor}10`, borderColor: `${cfg.accentColor}30` }}>
+                <Icon className="w-3.5 h-3.5" style={{ color: cfg.accentColor }} />
               </div>
+
+              {/* Content */}
               <div className="flex-1 min-w-0">
-                <div className="text-sm text-[#CBD5E1]">{cfg.label}</div>
-                <div className="text-[10px] text-[#475569] font-mono mt-0.5">
-                  Seal #{ev.seal_id}
-                  {ev.amount && <span> · {weiToGen(ev.amount)} GEN</span>}
+                <span className={`stamp text-[9px] ${cfg.stampClass}`}>{cfg.label}</span>
+                <div className="manifest-label mt-1.5">
+                  CASE #{ev.seal_id}
+                  {ev.amount && <span className="ml-3 font-mono" style={{ color: cfg.accentColor }}>{weiToGen(ev.amount)} GEN</span>}
                 </div>
               </div>
-              <div className="text-[10px] text-[#334155] text-right flex-shrink-0">{ts}</div>
+
+              {/* Timestamp */}
+              <div className="manifest-label text-right flex-shrink-0">{ts}</div>
             </div>
           );
         })}

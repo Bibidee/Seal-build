@@ -1,32 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, Filter } from "lucide-react";
+import { Search, FolderSearch } from "lucide-react";
 import { getPublicSeals } from "@/lib/genlayer/sealClient";
 import { SealCard } from "@/components/seal/SealCard";
 import type { SealSummary } from "@/lib/genlayer/types";
 
 const CATEGORIES = ["All", "Development", "Design", "Content", "Research", "AI", "Other"];
-const STATUSES = ["All", "funded", "accepted", "delivery_submitted", "accepted_full", "rejected"];
+const STATUSES   = ["All", "funded", "accepted", "delivery_submitted", "accepted_full", "rejected"];
 
-export default function ExplorePage() {
-  const [seals, setSeals] = useState<SealSummary[]>([]);
+export default function CasesPage() {
+  const [seals, setSeals]     = useState<SealSummary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
+  const [error, setError]     = useState<string | null>(null);
+  const [search, setSearch]   = useState("");
   const [category, setCategory] = useState("All");
-  const [status, setStatus] = useState("All");
+  const [status, setStatus]   = useState("All");
 
   useEffect(() => {
-    const addr = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-    if (!addr) {
+    if (!process.env.NEXT_PUBLIC_CONTRACT_ADDRESS) {
       setError("Contract not deployed — set NEXT_PUBLIC_CONTRACT_ADDRESS");
       setLoading(false);
       return;
     }
     getPublicSeals(0, 100)
       .then(({ seals }) => setSeals(seals))
-      .catch((e) => setError(e instanceof Error ? e.message : "Failed to load seals"))
+      .catch((e) => setError(e instanceof Error ? e.message : "Failed to load cases"))
       .finally(() => setLoading(false));
   }, []);
 
@@ -37,62 +36,66 @@ export default function ExplorePage() {
     return true;
   });
 
+  const inputCls = "bg-[#0C1118] border border-[#182030] text-sm text-[#E8EDF5] placeholder-[#2A3A50] focus:outline-none focus:border-[#00C9E8]/50 px-3 py-2 font-mono";
+
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#F8FAFC] mb-1">Explore Seals</h1>
-        <p className="text-[#475569] text-sm">Public work orders with locked GEN escrow.</p>
+      {/* Header */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-1">
+          <FolderSearch className="w-4 h-4 text-[#00C9E8]" />
+          <h1 className="text-3xl font-bold text-[#E8EDF5]" style={{ fontFamily: "var(--font-display)" }}>CASES</h1>
+        </div>
+        <p className="manifest-label">PUBLIC DELIVERY MANIFESTS · LOCKED GEN ESCROW</p>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-6">
-        <div className="flex-1 min-w-48 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#475569]" />
+      <div className="flex flex-wrap gap-2 mb-6 border-b border-[#182030] pb-5">
+        <div className="flex-1 min-w-44 relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#2A3A50]" />
           <input
             type="text"
-            placeholder="Search seals…"
+            placeholder="SEARCH CASES…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#0F172A] border border-[#1e293b] rounded-lg pl-9 pr-3 py-2 text-sm text-[#CBD5E1] placeholder-[#334155] focus:outline-none focus:border-[#E0B64B]/50"
+            className={`w-full pl-9 ${inputCls}`}
           />
         </div>
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="bg-[#0F172A] border border-[#1e293b] rounded-lg px-3 py-2 text-sm text-[#CBD5E1] focus:outline-none focus:border-[#E0B64B]/50"
-        >
+        <select value={category} onChange={(e) => setCategory(e.target.value)} className={inputCls}>
           {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
         </select>
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="bg-[#0F172A] border border-[#1e293b] rounded-lg px-3 py-2 text-sm text-[#CBD5E1] focus:outline-none focus:border-[#E0B64B]/50"
-        >
+        <select value={status} onChange={(e) => setStatus(e.target.value)} className={inputCls}>
           {STATUSES.map((s) => <option key={s}>{s}</option>)}
         </select>
       </div>
 
       {loading && (
-        <div className="text-center py-16 text-[#475569] text-sm">Loading seals…</div>
+        <div className="text-center py-16">
+          <div className="manifest-label">LOADING CASES…</div>
+        </div>
       )}
 
       {error && (
-        <div className="text-center py-16 text-[#EF4444] text-sm bg-[#1a0000]/50 border border-[#EF4444]/20 rounded-xl">
+        <div className="text-center py-16 font-mono text-[11px] text-[#FF2D4A] border border-[#FF2D4A]/20 bg-[#220010]">
           {error}
         </div>
       )}
 
       {!loading && !error && filtered.length === 0 && (
-        <div className="text-center py-16 text-[#475569] text-sm">
-          No public seals found. <a href="/create" className="text-[#E0B64B] hover:underline">Create the first one.</a>
+        <div className="text-center py-16 text-[#5C7090] text-sm">
+          No public cases found.{" "}
+          <a href="/create" className="text-[#00C9E8] hover:underline">Open the first seal.</a>
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        {filtered.map((seal) => (
-          <SealCard key={seal.seal_id} seal={seal} />
-        ))}
-      </div>
+      {filtered.length > 0 && (
+        <>
+          <div className="manifest-label mb-3">{filtered.length} CASE{filtered.length !== 1 ? "S" : ""} FOUND</div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {filtered.map((seal) => <SealCard key={seal.seal_id} seal={seal} />)}
+          </div>
+        </>
+      )}
     </div>
   );
 }

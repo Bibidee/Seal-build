@@ -3,6 +3,11 @@
 
 from genlayer import *
 import json
+from datetime import datetime, timezone
+
+
+def _now() -> int:
+    return int(datetime.now(timezone.utc).timestamp())
 
 ALLOWED_VERDICT_STATUS = [
     "meets_criteria",
@@ -126,7 +131,7 @@ class SealContract(gl.Contract):
         assert title.strip(), "title must not be empty"
         assert deliverable_description.strip(), "deliverable_description must not be empty"
         assert acceptance_criteria.strip(), "acceptance_criteria must not be empty"
-        assert int(deadline) > int(gl.message.timestamp), "deadline must be in the future"
+        assert int(deadline) > _now(), "deadline must be in the future"
 
         if bond_required:
             assert int(bond_amount) > 0, "bond_amount must be > 0 when bond is required"
@@ -138,7 +143,7 @@ class SealContract(gl.Contract):
         self.seal_count = u256(current_count + 1)
 
         buyer = str(gl.message.sender_address)
-        now = int(gl.message.timestamp)
+        now = _now()
 
         seal = {
             "seal_id": seal_id,
@@ -201,7 +206,7 @@ class SealContract(gl.Contract):
 
         seal = _loads(raw, {})
         assert seal["status"] == "funded", f"Seal is not available for acceptance (status: {seal['status']})"
-        assert int(gl.message.timestamp) < int(seal["deadline"]), "Seal deadline has passed"
+        assert _now() < int(seal["deadline"]), "Seal deadline has passed"
 
         contributor = str(gl.message.sender_address)
         assert contributor.lower() != seal["buyer"].lower(), "Buyer cannot be contributor"
@@ -223,7 +228,7 @@ class SealContract(gl.Contract):
         else:
             assert int(gl.message.value) == 0, "Bond not required for this seal"
 
-        now = int(gl.message.timestamp)
+        now = _now()
 
         seal["contributor"] = contributor
         seal["bond_locked"] = str(int(bond_locked))
@@ -266,7 +271,7 @@ class SealContract(gl.Contract):
         escrow = int(seal["total_escrow"])
         assert escrow > 0, "No escrow to refund"
 
-        now = int(gl.message.timestamp)
+        now = _now()
 
         seal["status"] = "cancelled"
         seal["refund_amount"] = str(escrow)
@@ -298,12 +303,12 @@ class SealContract(gl.Contract):
 
         seal = _loads(raw, {})
         assert seal["status"] in ("funded", "accepted"), f"Cannot expire seal in status: {seal['status']}"
-        assert int(gl.message.timestamp) >= int(seal["deadline"]), "Seal deadline has not passed yet"
+        assert _now() >= int(seal["deadline"]), "Seal deadline has not passed yet"
 
         buyer = seal["buyer"]
         escrow = int(seal["total_escrow"])
         bond = int(seal["bond_locked"])
-        now = int(gl.message.timestamp)
+        now = _now()
 
         seal["status"] = "expired"
         seal["remaining_escrow"] = "0"
@@ -374,7 +379,7 @@ class SealContract(gl.Contract):
 
         delivery_count = int(seal.get("delivery_count", "0")) + 1
         delivery_id = f"{seal_id}:{delivery_count}"
-        now = int(gl.message.timestamp)
+        now = _now()
 
         delivery = {
             "delivery_id": delivery_id,
@@ -446,7 +451,7 @@ class SealContract(gl.Contract):
 
         delivery_count = int(seal.get("delivery_count", "0")) + 1
         delivery_id = f"{seal_id}:{delivery_count}"
-        now = int(gl.message.timestamp)
+        now = _now()
 
         delivery = {
             "delivery_id": delivery_id,
@@ -659,7 +664,7 @@ confidence must be integer 0–100."""
         revision_required = bool(verdict_dict.get("revision_required", False))
         short_reason = str(verdict_dict.get("short_reason", ""))[:500]
 
-        now = int(gl.message.timestamp)
+        now = _now()
         verdict_id = f"{seal_id}:{seal.get('delivery_count', '1')}"
 
         verdict_record = {
@@ -795,7 +800,7 @@ confidence must be integer 0–100."""
         assert payout > 0, "No payout available"
         assert payout <= int(seal["total_escrow"]), "Payout exceeds escrow — contract invariant violated"
 
-        now = int(gl.message.timestamp)
+        now = _now()
 
         seal["payout_claimed"] = True
         self.seals[seal_id] = _json(seal)
@@ -832,7 +837,7 @@ confidence must be integer 0–100."""
         refund = int(seal["refund_amount"])
         assert refund > 0, "No refund available"
 
-        now = int(gl.message.timestamp)
+        now = _now()
 
         seal["refund_claimed"] = True
         self.seals[seal_id] = _json(seal)
@@ -871,7 +876,7 @@ confidence must be integer 0–100."""
 
         if bond_action == "slash_full":
             buyer = seal["buyer"]
-            now = int(gl.message.timestamp)
+            now = _now()
 
             seal["bond_claimed"] = True
             self.seals[seal_id] = _json(seal)
@@ -893,7 +898,7 @@ confidence must be integer 0–100."""
             slash_amount = bond // 2
             return_amount = bond - slash_amount
             buyer = seal["buyer"]
-            now = int(gl.message.timestamp)
+            now = _now()
 
             seal["bond_claimed"] = True
             self.seals[seal_id] = _json(seal)
@@ -930,7 +935,7 @@ confidence must be integer 0–100."""
             f"Bond not yet returnable in status: {seal['status']}"
         )
 
-        now = int(gl.message.timestamp)
+        now = _now()
 
         seal["bond_claimed"] = True
         self.seals[seal_id] = _json(seal)

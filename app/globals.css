@@ -1,74 +1,121 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 :root {
-  --font-display: 'Sora', sans-serif;
+  --font-display: 'Rajdhani', sans-serif;
   --font-body: 'Inter', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
 
-  --seal-black: #07080C;
-  --seal-gold: #E0B64B;
-  --verdict-cyan: #22D3EE;
-  --escrow-green: #16A34A;
-  --dispute-red: #EF4444;
-  --panel-navy: #0F172A;
-  --mist-line: #CBD5E1;
-  --soft-white: #F8FAFC;
-  --muted-slate: #64748B;
-  --electric-purple: #7C3AED;
+  --dock-black: #080B10;
+  --surface: #0C1118;
+  --panel: #111722;
+  --border: #182030;
+  --cyan: #00C9E8;
+  --orange: #FF5C1A;
+  --yellow: #F5C000;
+  --green: #00E87A;
+  --red: #FF2D4A;
+  --text-primary: #E8EDF5;
+  --text-muted: #5C7090;
+  --text-dim: #2A3A50;
 }
 
 * { box-sizing: border-box; }
 
 body {
-  background: #07080C;
-  color: #CBD5E1;
+  background: #080B10;
+  color: #E8EDF5;
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4 { font-family: var(--font-display); }
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-display);
+  letter-spacing: 0.03em;
+}
+
 code, pre, .font-mono { font-family: var(--font-mono); }
 
 ::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: #07080C; }
-::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 2px; }
+::-webkit-scrollbar-track { background: #080B10; }
+::-webkit-scrollbar-thumb { background: #182030; border-radius: 2px; }
 
-::selection { background: #1e3a5f; }
+::selection { background: #003D50; }
 
-.gold-text { color: #E0B64B; }
-.cyan-text { color: #22D3EE; }
-.green-text { color: #16A34A; }
-.red-text { color: #EF4444; }
-.purple-text { color: #7C3AED; }
-
-.panel {
-  background: #0F172A;
-  border: 1px solid #1e293b;
-  border-radius: 12px;
+.dock-panel {
+  background: #111722;
+  border: 1px solid #182030;
 }
 
-.panel-sm {
-  background: #0d1829;
-  border: 1px solid #1a2540;
-  border-radius: 8px;
+.inspect-panel {
+  background: #111722;
+  border: 1px solid #182030;
+  border-left: 2px solid #00C9E8;
 }
 
-.gold-border { border-color: #E0B64B; }
-.cyan-border { border-color: #22D3EE; }
+.manifest-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #5C7090;
+}
 
-@keyframes pulse-gold {
+.stamp {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 3px;
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stamp-accept  { background: #001F0F; border: 1.5px solid #00E87A; color: #00E87A; }
+.stamp-partial { background: #001E28; border: 1.5px solid #00C9E8; color: #00C9E8; }
+.stamp-revision{ background: #211D00; border: 1.5px solid #F5C000; color: #F5C000; }
+.stamp-refund  { background: #251200; border: 1.5px solid #FF5C1A; color: #FF5C1A; }
+.stamp-breach  { background: #220010; border: 1.5px solid #FF2D4A; color: #FF2D4A; }
+.stamp-neutral { background: #111722; border: 1.5px solid #2A3A50; color: #5C7090; }
+
+.chain-receipt {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #00C9E8;
+  background: #001E28;
+  border: 1px solid #003A50;
+  border-radius: 3px;
+  padding: 3px 8px;
+}
+.chain-receipt:hover { background: #002A38; }
+
+@keyframes pulse-cyan {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  50%       { opacity: 0.35; }
 }
-.pulse-gold { animation: pulse-gold 2s ease-in-out infinite; }
+.pulse-cyan { animation: pulse-cyan 2s ease-in-out infinite; }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
+  0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 .shimmer {
-  background: linear-gradient(90deg, transparent 0%, rgba(224, 182, 75, 0.08) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(0,201,232,0.06) 50%, transparent 100%);
   background-size: 200% 100%;
   animation: shimmer 2.5s ease-in-out infinite;
+}
+
+@keyframes scan-down {
+  0%   { transform: translateY(-4px); opacity: 0.6; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+input, textarea, select {
+  color-scheme: dark;
 }

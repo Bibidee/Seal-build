@@ -17,66 +17,76 @@ export function EscrowRail({ seal }: EscrowRailProps) {
   const lockedPct = 100 - payoutPct - refundPct;
 
   return (
-    <div className="bg-[#0d1829] border border-[#1a2540] rounded-xl p-4">
+    <div className="bg-[#080B10] border border-[#182030] border-l-2 border-l-[#00C9E8] p-4">
+      {/* Header */}
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs uppercase tracking-widest text-[#475569]">Escrow Rail</span>
-        <span className="text-[#E0B64B] font-mono text-sm font-semibold">{weiToGen(seal.total_escrow)} GEN</span>
+        <div className="flex items-center gap-3">
+          <span className="manifest-label">PAYOUT GATE</span>
+          <div className="h-px w-12 bg-[#182030]" />
+          <span className="manifest-label">ESCROW LOCK</span>
+        </div>
+        <span className="text-[#00C9E8] font-mono text-sm font-medium">{weiToGen(seal.total_escrow)} GEN</span>
       </div>
 
-      {/* Rail bar */}
-      <div className="h-3 bg-[#1e293b] rounded-full overflow-hidden flex">
+      {/* Gate bar */}
+      <div className="h-2 bg-[#0C1118] border border-[#182030] overflow-hidden flex mb-2">
         {payoutPct > 0 && (
           <div
-            className="h-full bg-[#16A34A] transition-all duration-500"
+            className="h-full bg-[#00E87A] transition-all duration-700"
             style={{ width: `${payoutPct}%` }}
-            title={`Released: ${weiToGen(seal.payout_amount)} GEN`}
+            title={`Released to contributor: ${weiToGen(seal.payout_amount)} GEN`}
           />
         )}
         {refundPct > 0 && (
           <div
-            className="h-full bg-[#22D3EE] transition-all duration-500"
+            className="h-full bg-[#FF5C1A] transition-all duration-700"
             style={{ width: `${refundPct}%` }}
-            title={`Refunded: ${weiToGen(seal.refund_amount)} GEN`}
+            title={`Refunded to buyer: ${weiToGen(seal.refund_amount)} GEN`}
           />
         )}
         {lockedPct > 0 && (
           <div
-            className="h-full bg-[#E0B64B]/20 shimmer transition-all duration-500"
-            style={{ width: `${lockedPct}%` }}
+            className="h-full shimmer transition-all duration-700"
+            style={{ width: `${lockedPct}%`, background: "#00C9E815" }}
             title="Locked in escrow"
           />
         )}
       </div>
 
-      <div className="flex items-center gap-4 mt-2.5 text-[11px]">
+      {/* Legend */}
+      <div className="flex items-center gap-5 text-[10px] font-mono">
         <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-sm bg-[#16A34A]" />
-          <span className="text-[#475569]">Released</span>
-          <span className="text-[#CBD5E1] font-mono">{weiToGen(seal.payout_amount)} GEN</span>
+          <div className="w-2 h-1.5 bg-[#00E87A]" />
+          <span className="text-[#5C7090]">CONTRIBUTOR</span>
+          <span className="text-[#00E87A]">{weiToGen(seal.payout_amount)}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-sm bg-[#22D3EE]" />
-          <span className="text-[#475569]">Refund</span>
-          <span className="text-[#CBD5E1] font-mono">{weiToGen(seal.refund_amount)} GEN</span>
+          <div className="w-2 h-1.5 bg-[#FF5C1A]" />
+          <span className="text-[#5C7090]">BUYER RETURN</span>
+          <span className="text-[#FF5C1A]">{weiToGen(seal.refund_amount)}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-sm bg-[#E0B64B]/40" />
-          <span className="text-[#475569]">Locked</span>
+          <div className="w-2 h-1.5 bg-[#00C9E8]/30 border border-[#00C9E8]/30" />
+          <span className="text-[#5C7090]">LOCKED</span>
         </div>
       </div>
 
+      {/* Bond strip */}
       {seal.bond_locked && seal.bond_locked !== "0" && (
-        <div className="mt-3 pt-3 border-t border-[#1a2540] flex items-center justify-between text-[11px]">
-          <span className="text-[#475569]">Contributor Bond</span>
-          <div className="flex items-center gap-2">
-            <span className="text-[#E0B64B] font-mono">{weiToGen(seal.bond_locked)} GEN</span>
-            <span className={`px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider ${
-              seal.bond_action === "return" ? "text-[#16A34A] bg-[#001a08]" :
-              seal.bond_action === "slash_full" ? "text-[#EF4444] bg-[#1a0000]" :
-              seal.bond_action === "slash_partial" ? "text-[#F59E0B] bg-[#1a1000]" :
-              "text-[#64748B] bg-[#0a0f1a]"
+        <div className="mt-3 pt-3 border-t border-[#182030] flex items-center justify-between">
+          <span className="manifest-label">CONTRIBUTOR BOND</span>
+          <div className="flex items-center gap-3">
+            <span className="text-[#00C9E8] font-mono text-xs">{weiToGen(seal.bond_locked)} GEN</span>
+            <span className={`stamp text-[9px] ${
+              seal.bond_action === "return"        ? "stamp-accept"  :
+              seal.bond_action === "slash_full"    ? "stamp-breach"  :
+              seal.bond_action === "slash_partial" ? "stamp-refund"  :
+              "stamp-neutral"
             }`}>
-              {seal.bond_action || "locked"}
+              {seal.bond_action === "return"        ? "RETURN"         :
+               seal.bond_action === "slash_full"    ? "SLASH FULL"     :
+               seal.bond_action === "slash_partial" ? "SLASH PARTIAL"  :
+               "LOCKED"}
             </span>
           </div>
         </div>
