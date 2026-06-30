@@ -1,5 +1,6 @@
 "use client";
 
+import { getAddress } from "viem";
 import { getClient, getClientReady } from "@/lib/genlayer/client";
 import type {
   WorkSeal, DeliveryPacket, SealVerdict, SealSummary, AdminStats, ActivityEvent,
@@ -59,7 +60,7 @@ export async function getSealsByBuyer(buyer: string): Promise<WorkSeal[]> {
   const result = await client.readContract({
     address: contractAddress(),
     functionName: "get_seals_by_buyer",
-    args: [buyer],
+    args: [getAddress(buyer)],
   });
   return parseJson<WorkSeal[]>(result as string) ?? [];
 }
@@ -69,7 +70,7 @@ export async function getSealsByContributor(contributor: string): Promise<WorkSe
   const result = await client.readContract({
     address: contractAddress(),
     functionName: "get_seals_by_contributor",
-    args: [contributor],
+    args: [getAddress(contributor)],
   });
   return parseJson<WorkSeal[]>(result as string) ?? [];
 }
@@ -101,7 +102,7 @@ export async function getWalletActivity(address: string): Promise<ActivityEvent[
   const result = await client.readContract({
     address: contractAddress(),
     functionName: "get_wallet_activity",
-    args: [address],
+    args: [getAddress(address)],
   });
   return parseJson<ActivityEvent[]>(result as string) ?? [];
 }
