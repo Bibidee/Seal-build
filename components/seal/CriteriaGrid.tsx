@@ -9,14 +9,15 @@ interface CriteriaGridProps {
 }
 
 function parseCriteriaLines(text: string): string[] {
-  return text.split("\n").map((l) => l.replace(/^[-*•]\s*/, "").trim()).filter(Boolean);
+  const normalized = text.replace(/\\n/g, "\n");
+  return normalized.split("\n").map((l) => l.replace(/^[-*•]\s*/, "").trim()).filter(Boolean);
 }
 
 export function CriteriaGrid({ acceptance_criteria, required_evidence, deliverable_description }: CriteriaGridProps) {
   const criteriaLines = parseCriteriaLines(acceptance_criteria);
   const evidenceLines = parseCriteriaLines(required_evidence);
-  const hasCriteriaList = acceptance_criteria.includes("\n");
-  const hasEvidenceList = required_evidence.includes("\n");
+  const hasCriteriaList = criteriaLines.length > 1;
+  const hasEvidenceList = evidenceLines.length > 1;
 
   return (
     <div className="space-y-3">

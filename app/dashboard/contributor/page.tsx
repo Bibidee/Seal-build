@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Hammer, Clock, TriangleAlert } from "lucide-react";
 import { useWallet } from "@/lib/context/WalletContext";
 import {
-  getSealsByContributor, acceptSeal, genToWei,
+  getSealsByContributor, getPublicSeals, acceptSeal, genToWei,
   weiToGen, statusLabel, formatDeadline, isDeadlinePassed,
 } from "@/lib/genlayer/sealClient";
 import { waitForTxFinality } from "@/lib/genlayer/txWaiter";
@@ -33,8 +33,21 @@ export default function ContributorBay() {
   function load() {
     if (!address) return;
     setLoading(true);
-    getSealsByContributor(address)
-      .then(setSeals)
+    // get_seals_by_contributor only includes seals after accept_seal is called.
+    // For invited-but-not-yet-accepted seals, scan public seals for matching contributor address.
+    Promise.all([
+      getSealsByContributor(address),
+      getPublicSeals(0, 200).then(({ seals }) =>
+        seals.filter(
+          (s) => s.status === "funded" && s.contributor?.toLowerCase() === address.toLowerCase()
+        )
+      ).catch(() => []),
+    ])
+      .then(([accepted, invited]) => {
+        const ids = new Set(accepted.map((s) => s.seal_id));
+        const merged = [...accepted, ...invited.filter((s) => !ids.has(s.seal_id))];
+        setSeals(merged as WorkSeal[]);
+      })
       .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"))
       .finally(() => setLoading(false));
   }
