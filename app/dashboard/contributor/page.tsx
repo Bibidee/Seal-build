@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Hammer, Clock, TriangleAlert } from "lucide-react";
 import { useWallet } from "@/lib/context/WalletContext";
 import {
-  getSealsByContributor, getPublicSeals, acceptSeal, genToWei,
+  getSealsByContributor, getPublicSeals, getSeal, acceptSeal, genToWei,
   weiToGen, statusLabel, formatDeadline, isDeadlinePassed,
 } from "@/lib/genlayer/sealClient";
 import { waitForTxFinality } from "@/lib/genlayer/txWaiter";
@@ -37,11 +37,12 @@ export default function ContributorBay() {
     // For invited-but-not-yet-accepted seals, scan public seals for matching contributor address.
     Promise.all([
       getSealsByContributor(address),
-      getPublicSeals(0, 200).then(({ seals }) =>
-        seals.filter(
+      getPublicSeals(0, 200).then(({ seals }) => {
+        const matches = seals.filter(
           (s) => s.status === "funded" && s.contributor?.toLowerCase() === address.toLowerCase()
-        )
-      ).catch(() => []),
+        );
+        return Promise.all(matches.map((s) => getSeal(s.seal_id).catch(() => null)));
+      }).then((results) => results.filter((s): s is WorkSeal => s !== null)).catch(() => []),
     ])
       .then(([accepted, invited]) => {
         const ids = new Set(accepted.map((s) => s.seal_id));
