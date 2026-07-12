@@ -127,7 +127,7 @@ class SealContract(gl.Contract):
         bond_amount: u256,
     ) -> str:
         value = gl.message.value
-        assert value > u256(0), "GEN escrow is required — no zero-value seal"
+        assert value > u256(0), "GEN escrow is required - no zero-value seal"
         assert title.strip(), "title must not be empty"
         assert deliverable_description.strip(), "deliverable_description must not be empty"
         assert acceptance_criteria.strip(), "acceptance_criteria must not be empty"
@@ -196,7 +196,7 @@ class SealContract(gl.Contract):
         return seal_id
 
     # -----------------------------------------------------------------------
-    # accept_seal (PAYABLE — contributor may need to send bond)
+    # accept_seal (PAYABLE - contributor may need to send bond)
     # -----------------------------------------------------------------------
 
     @gl.public.write.payable
@@ -254,7 +254,7 @@ class SealContract(gl.Contract):
         )
 
     # -----------------------------------------------------------------------
-    # cancel_unaccepted_seal — buyer cancels before acceptance
+    # cancel_unaccepted_seal - buyer cancels before acceptance
     # -----------------------------------------------------------------------
 
     @gl.public.write
@@ -293,7 +293,7 @@ class SealContract(gl.Contract):
         _EOA(Address(caller)).emit_transfer(value=u256(escrow))
 
     # -----------------------------------------------------------------------
-    # expire_seal — anyone can expire if deadline passed and seal is funded/accepted
+    # expire_seal - anyone can expire if deadline passed and seal is funded/accepted
     # -----------------------------------------------------------------------
 
     @gl.public.write
@@ -375,7 +375,7 @@ class SealContract(gl.Contract):
 
         urls = _loads(evidence_urls, [])
         assert isinstance(urls, list) and len(urls) > 0, "At least one evidence URL is required"
-        assert 0 <= int(self_assessed_completion_bps) <= 10000, "self_assessed_completion_bps must be 0–10000"
+        assert 0 <= int(self_assessed_completion_bps) <= 10000, "self_assessed_completion_bps must be 0-10000"
 
         delivery_count = int(seal.get("delivery_count", "0")) + 1
         delivery_id = f"{seal_id}:{delivery_count}"
@@ -447,7 +447,7 @@ class SealContract(gl.Contract):
 
         urls = _loads(evidence_urls, [])
         assert isinstance(urls, list) and len(urls) > 0, "At least one evidence URL is required"
-        assert 0 <= int(self_assessed_completion_bps) <= 10000, "self_assessed_completion_bps must be 0–10000"
+        assert 0 <= int(self_assessed_completion_bps) <= 10000, "self_assessed_completion_bps must be 0-10000"
 
         delivery_count = int(seal.get("delivery_count", "0")) + 1
         delivery_id = f"{seal_id}:{delivery_count}"
@@ -567,7 +567,7 @@ BUYER NOTES:
 
 YOUR TASK:
 Judge whether this delivery satisfies the acceptance criteria.
-Fetch and read each evidence URL yourself before judging — the FETCHED EVIDENCE
+Fetch and read each evidence URL yourself before judging - the FETCHED EVIDENCE
 CONTENT section below contains what you retrieved live from each URL. Weigh
 that fetched content over the contributor's own description of it.
 Return ONLY canonical JSON.
@@ -586,8 +586,8 @@ Return ONLY this exact JSON structure:
 verdict_status must be one of: {', '.join(ALLOWED_VERDICT_STATUS)}
 payment_action must be one of: {', '.join(ALLOWED_PAYMENT_ACTION)}
 bond_action must be one of: {', '.join(ALLOWED_BOND_ACTION)}
-payout_bps must be integer 0–10000.
-confidence must be integer 0–100."""
+payout_bps must be integer 0-10000.
+confidence must be integer 0-100."""
 
         task = (
             "Evaluate whether the submitted delivery satisfies the Work Seal acceptance criteria. "
@@ -825,7 +825,7 @@ confidence must be integer 0–100."""
 
         payout = int(seal["payout_amount"])
         assert payout > 0, "No payout available"
-        assert payout <= int(seal["total_escrow"]), "Payout exceeds escrow — contract invariant violated"
+        assert payout <= int(seal["total_escrow"]), "Payout exceeds escrow - contract invariant violated"
 
         now = _now()
 

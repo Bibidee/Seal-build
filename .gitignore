@@ -2,3 +2,7 @@
 .next/
 node_modules/
 *.log
+contract/.venv/
+contract/artifacts/
+contract/.pytest_cache/
+__pycache__/
