@@ -14,7 +14,7 @@ Seal is a decentralized delivery acceptance escrow dApp built on GenLayer. Buyer
 
 1. **Buyer** creates a Work Seal — locks GEN escrow, sets acceptance criteria and deadline, optionally invites a contributor and requires a bond
 2. **Contributor** accepts the seal (posting bond if required) and delivers work with evidence URLs
-3. **GenLayer validators** autonomously judge the delivery against the acceptance criteria using `eq_principle`
+3. **GenLayer validators** independently fetch each evidence URL themselves (`gl.nondet.web.render`) and judge the delivery against the acceptance criteria using `eq_principle`
 4. **Verdict** is issued on-chain — full release, partial split, revision request, or refund
 5. **Claims** are settled — contributor claims payout, buyer claims any refund, bond is returned or slashed
 
@@ -33,7 +33,7 @@ Seal is a decentralized delivery acceptance escrow dApp built on GenLayer. Buyer
 
 ## Contract
 
-- **Address:** `0x562a5a55A92C45c5ea4D63A4D4e053241EE305bf`
+- **Address:** `0x6269D0584b30c2eAed97FE2727fA540850949a67`
 - **Network:** StudioNet · Chain 61999
 - **File:** `contract/SealContract.py`
 
@@ -51,7 +51,7 @@ npm run dev
 
 ```
 NEXT_PUBLIC_GENLAYER_RPC_URL=https://studio.genlayer.com/api
-NEXT_PUBLIC_CONTRACT_ADDRESS=0x562a5a55A92C45c5ea4D63A4D4e053241EE305bf
+NEXT_PUBLIC_CONTRACT_ADDRESS=0x6269D0584b30c2eAed97FE2727fA540850949a67
 NEXT_PUBLIC_EXPLORER_URL=https://explorer-studio.genlayer.com
 ```
 

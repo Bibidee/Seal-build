@@ -1,0 +1,6 @@
+# Pinned to match the `py-genlayer` runtime the contract declares via its
+# `# { "Depends": "py-genlayer:1jb45aa8..." }` header (see SealContract.py).
+# gltest spins up a local GenLayer devnet (with mock/local LLM providers) so
+# request_acceptance_verdict's gl.nondet.exec_prompt(...) call can be
+# exercised end-to-end instead of only unit-tested in isolation.
+genlayer-test==0.8.0

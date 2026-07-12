@@ -567,6 +567,9 @@ BUYER NOTES:
 
 YOUR TASK:
 Judge whether this delivery satisfies the acceptance criteria.
+Fetch and read each evidence URL yourself before judging — the FETCHED EVIDENCE
+CONTENT section below contains what you retrieved live from each URL. Weigh
+that fetched content over the contributor's own description of it.
 Return ONLY canonical JSON.
 
 Return ONLY this exact JSON structure:
@@ -601,8 +604,32 @@ confidence must be integer 0–100."""
             "No markdown, no explanation."
         )
 
+        evidence_urls_for_fetch = delivery.get("evidence_urls", [])[:5]
+
         def nondet_verdict() -> str:
-            return prompt_text
+            fetched_sections = []
+
+            for url in evidence_urls_for_fetch:
+                try:
+                    page_text = gl.nondet.web.render(url, mode="text")
+                    snippet = (page_text or "").strip()[:2000] or "(page was empty)"
+                except Exception:
+                    snippet = "(could not fetch this URL)"
+
+                fetched_sections.append(f"URL: {url}\nCONTENT:\n{snippet}")
+
+            fetched_evidence_text = (
+                "\n\n".join(fetched_sections)
+                if fetched_sections
+                else "(no evidence URLs to fetch)"
+            )
+
+            full_prompt = (
+                f"{prompt_text}\n\nFETCHED EVIDENCE CONTENT "
+                f"(retrieved live by you from the evidence URLs above):\n{fetched_evidence_text}"
+            )
+
+            return gl.nondet.exec_prompt(full_prompt)
 
         try:
             result_raw = gl.eq_principle.prompt_non_comparative(
