@@ -17,9 +17,9 @@ across validators the same way it does for the LLM verdict itself.
 
 The contract source must stay pure ASCII. The toolchain hex-encodes the raw
 file bytes with a strict ASCII codec before it can even fetch the contract's
-schema, so a stray `—`/`–` in a comment or assert message breaks deployment
-with an opaque `Failed to get schema from all clients` error, not an
-encoding error pointing at the actual character.
+schema, so a stray em/en-dash in a comment or assert message breaks
+deployment with an opaque `Failed to get schema from all clients` error, not
+an encoding error pointing at the actual character.
 
 ## Verifying the verdict path
 
@@ -44,3 +44,22 @@ doesn't have; `--network studionet` runs against GenLayer's hosted public
 network instead using an ephemeral test account funded by the network.
 
 Confirmed passing (2026-07-12): `1 passed in 107.33s`.
+
+## Seeding demo data on the live contract
+
+`scripts/seed_demo_data.py` generates fresh throwaway StudioNet keypairs at
+runtime (never written to disk), funds them via the network faucet
+(`client.fund_account`), and populates the deployed contract
+(`NEXT_PUBLIC_CONTRACT_ADDRESS` / `SEAL_CONTRACT_ADDRESS` env var) with demo
+seals - one carried through to a real LLM verdict, one left as an open
+funded listing.
+
+```bash
+pip install -r requirements.txt
+python scripts/seed_demo_data.py
+```
+
+Verdict transactions can need multiple validator consensus rounds, so that
+step waits up to 5 minutes; the other writes are near-instant. Save the
+printed private keys if you want to reuse those accounts - they aren't
+persisted anywhere.
