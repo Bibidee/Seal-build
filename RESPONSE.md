@@ -53,6 +53,18 @@ was structurally unable to run.
   one revision request, and one case where validators failed to reach
   consensus - real `eq_principle` behavior, not simulated.
 
+## Live demo confirmed working end-to-end
+
+While verifying the above, found that the deployed Vercel demo
+([seal-build.vercel.app](https://seal-build.vercel.app)) was still pointing
+at a stale `NEXT_PUBLIC_CONTRACT_ADDRESS` - `.env.local` is gitignored and
+only affects local runs, so updating the contract address in this repo
+never propagated to Vercel's own environment variable configuration. Updated
+the variable in the Vercel project settings and redeployed; the live site
+now correctly shows all seeded seals and verdicts from the current contract.
+This closes the loop end-to-end: contract fix -> on-chain verification ->
+live public-facing demo, not just local/CLI verification.
+
 ## Commits
 
 | Commit | Summary |
